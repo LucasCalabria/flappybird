@@ -6,6 +6,7 @@ require 'Bird'
 require 'Pipe'
 require 'PipePair'
 
+require 'Debug'
 require 'StateMachine'
 require 'states/BaseState'
 require 'states/CountdownState'
@@ -19,11 +20,9 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 
+DEBUGGING = true
 
-local background = love.graphics.newImage('imagens/background.png')
 local backgroundScroll = 0
-
-local ground = love.graphics.newImage('imagens/ground.png')
 local groundScroll = 0
 
 -- velocidade que a imagem vai andando - o chão vai mais rapido pra fazer a ilusão da velocidade
@@ -43,10 +42,14 @@ function love.load()
 
     love.window.setTitle('Flappy Bird')
 
-    smallFont = love.graphics.newFont('fontes/font.ttf', 8)
-    mediumFont = love.graphics.newFont('fontes/flappy.ttf', 14)
-    flappyFont = love.graphics.newFont('fontes/flappy.ttf', 28) -- fonte do titulo
-    hugeFont = love.graphics.newFont('fontes/flappy.ttf', 56)
+    newImage(background,'background','imagens/background.png')
+    newImage(ground, 'ground', 'imagens/ground.png')
+
+    smallFont = newFont('smallFont','fontes/font.ttf', 8)
+    mediumFont = newFont('mediumFont','fontes/flappy.ttf', 14)
+    flappyFont = newFont('flappyFont', 'fontes/flappy.ttf', 28) -- fonte do titulo
+    hugeFont = newFont('hugeFont', 'fontes/flappy.ttf', 56)
+
     love.graphics.setFont(flappyFont)
 
     sounds = {
@@ -79,6 +82,11 @@ function love.load()
 
 
     love.keyboard.keysPressed = {} -- cria uma lista de input
+
+    if DEBUGGING then
+        Debug:write_global()
+        Debug:write_fonts()
+    end
 end
 
 function love.resize(w, h)
@@ -112,6 +120,27 @@ function love.update(dt)
         % GROUND_LOOPING_POINT -- recomeça a imagem depois de passar pelo looping point
 
 
+    if DEBUGGING then
+        tempoAcumulado = tempoAcumulado + dt
+
+        if TAKING_SAMPLE then
+            Debug:write_background()
+            Debug:write_prints()
+            Debug:take_screenshot()
+
+            TAKING_SAMPLE = false
+        end
+
+        if (tempoAcumulado >= tempoEspera and numeroPrints <= numeroPrintsMaximo) then
+            TAKING_SAMPLE = true
+            numeroPrints = numeroPrints + 1
+
+            print_fonts = {'flappyFont', 'mediumFont'}
+
+            tempoAcumulado = tempoAcumulado - tempoEspera
+        end
+    end
+
     gStateMachine:update(dt)
 
     love.keyboard.keysPressed = {}
@@ -120,11 +149,38 @@ end
 function love.draw()
     push:start()
 
-    love.graphics.draw(background, -backgroundScroll, 0) -- posiciona a imagem de fundo com o x(-background) mudando e y = 0
+    draw('background', -backgroundScroll, 0) -- posiciona a imagem de fundo com o x(-background) mudando e y = 0
 
     gStateMachine:render()
 
-    love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16) -- posiciona o chão com o x(-ground) mudando e y na altura do jogo - altura do chão(16)
+    draw('ground', -groundScroll, VIRTUAL_HEIGHT - 16) -- posiciona o chão com o x(-ground) mudando e y na altura do jogo - altura do chão(16)
 
     push:finish()
+end
+
+function newFont(name, path, size)
+    if DEBUGGING then
+        table.insert(fonts_names, name)
+        table.insert(fonts_paths, path)
+        table.insert(fonts_sizes, size)
+    end
+
+    return love.graphics.newFont(path, size)
+end
+
+function newImage(variable, name, path)
+    variable = love.graphics.newImage(path)
+
+    Debug:setVariablePaths(name, path)
+    Debug:setVariableObj(name, variable)
+end
+
+function draw(image, x, y)
+    if TAKING_SAMPLE then
+        table.insert(background_paths, Debug:getVariablePaths(image))
+        table.insert(background_xs, x)
+        table.insert(background_ys, y)
+    end
+
+    return love.graphics.draw(Debug:getVariableObj(image), x, y)
 end

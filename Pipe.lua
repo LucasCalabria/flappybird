@@ -1,7 +1,5 @@
 Pipe = Class{}
 
-local PIPE_IMAGE = love.graphics.newImage('imagens/pipe.png')
-
 PIPE_SPEED = 60 -- velocidade que cano vai para a esquerda
 
 -- altura e largura da imagem
@@ -17,6 +15,8 @@ function Pipe:init(orientation, y) -- orientation descobre se o cano é upper ou
     self.height = PIPE_HEIGHT
 
     self.orientation = orientation
+
+    newImage(PIPE_IMAGE, 'PIPE_IMAGE', 'imagens/pipe.png')
 end
 
 function Pipe:update(dt)
@@ -24,9 +24,31 @@ function Pipe:update(dt)
 end
 
 function Pipe:render()
-    love.graphics.draw(PIPE_IMAGE, self.x,
+    Pipe:draw('PIPE_IMAGE', self.x,
         (self.orientation == 'top' and self.y + PIPE_HEIGHT or self.y), -- (coordenada y) (esse PIPE_HEIGHT faz aparecer o cano invertido)
         0, -- rotaçao é zero
         1, -- scale x (quando é 1 não altera)
         self.orientation == 'top' and -1 or 1) -- scale y -- (-1 faz com que a imagem inverta)
+end
+
+--------------- Classes de debug ---------------
+
+function newImage(variable, name, path)
+    variable = love.graphics.newImage(path)
+
+    Debug:setVariablePaths(name, path)
+    Debug:setVariableObj(name, variable)
+end
+
+function Pipe:draw(image, x, y, rotation, scale_x, scale_y)
+    if TAKING_SAMPLE then
+        table.insert(images_paths, Debug:getVariablePaths(image))
+        table.insert(images_xs, x)
+        table.insert(images_ys, y)
+        table.insert(images_rotations, rotation)
+        table.insert(images_scale_xs, scale_x)
+        table.insert(images_scale_ys, scale_y)
+    end
+
+    return love.graphics.draw(Debug:getVariableObj(image), x, y, rotation, scale_x, scale_y)
 end

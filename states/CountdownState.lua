@@ -21,6 +21,6 @@ function CountdownState:update(dt) -- conta o tempo em ordem regressiva
 end
 
 function CountdownState:render()
-    love.graphics.setFont(hugeFont)
-    love.graphics.printf(tostring(self.count), 0, 120, VIRTUAL_WIDTH, 'center')
+    setFont(hugeFont, 'hugeFont')
+    printf(tostring(self.count), 'hugeFont', 0, 120, VIRTUAL_WIDTH, 'center')
 end

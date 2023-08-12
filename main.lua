@@ -124,18 +124,19 @@ function love.update(dt)
         tempoAcumulado = tempoAcumulado + dt
 
         if TAKING_SAMPLE then
-            Debug:write_background()
-            Debug:write_prints()
             Debug:take_screenshot()
+            Debug:write_background()
+            Debug:write_images()
+            Debug:write_prints()
 
             TAKING_SAMPLE = false
         end
 
-        if (tempoAcumulado >= tempoEspera and numeroPrints <= numeroPrintsMaximo) then
+        if (tempoAcumulado >= tempoEspera and numeroPrint < numeroPrintsMaximo) then
             TAKING_SAMPLE = true
-            numeroPrints = numeroPrints + 1
+            numeroPrint = numeroPrint + 1
 
-            print_fonts = {'flappyFont', 'mediumFont'}
+            --print_fonts = {'flappyFont', 'mediumFont'}
 
             tempoAcumulado = tempoAcumulado - tempoEspera
         end
@@ -149,11 +150,11 @@ end
 function love.draw()
     push:start()
 
-    draw('background', -backgroundScroll, 0) -- posiciona a imagem de fundo com o x(-background) mudando e y = 0
+    draw_background('background', -backgroundScroll, 0) -- posiciona a imagem de fundo com o x(-background) mudando e y = 0
 
     gStateMachine:render()
 
-    draw('ground', -groundScroll, VIRTUAL_HEIGHT - 16) -- posiciona o chão com o x(-ground) mudando e y na altura do jogo - altura do chão(16)
+    draw_background('ground', -groundScroll, VIRTUAL_HEIGHT - 16) -- posiciona o chão com o x(-ground) mudando e y na altura do jogo - altura do chão(16)
 
     push:finish()
 end
@@ -175,7 +176,7 @@ function newImage(variable, name, path)
     Debug:setVariableObj(name, variable)
 end
 
-function draw(image, x, y)
+function draw_background(image, x, y)
     if TAKING_SAMPLE then
         table.insert(background_paths, Debug:getVariablePaths(image))
         table.insert(background_xs, x)

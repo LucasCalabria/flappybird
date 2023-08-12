@@ -1,14 +1,14 @@
 Debug = {}
 
-local FILE_NAME = "C:/Users/lucas/PycharmProjects/tcc/data"
+local FILE_NAME = "C:/Users/lucas/PycharmProjects/tcc/data/"
 
 TAKING_SAMPLE = false
 
 tempoEspera = 2 -- Em segundos
 tempoAcumulado = 0
 
-numeroPrints = 1
-numeroPrintsMaximo = 1
+numeroPrint = 0
+numeroPrintsMaximo = 5
 
 variablePaths = {} -- Tabela para armazenar variáveis
 variableObject = {}
@@ -20,6 +20,13 @@ fonts_sizes = {}
 background_paths = {}
 background_xs = {}
 background_ys = {}
+
+images_paths = {}
+images_xs = {}
+images_ys = {}
+images_rotations = {}
+images_scale_xs = {}
+images_scale_ys = {}
 
 print_texts = {}
 print_fonts = {}
@@ -47,9 +54,9 @@ function Debug:getVariableObj(name)
 end
 
 function Debug:write_global()
-    local path_file = FILE_NAME .. "/global_variables.py"
+    local path_file = FILE_NAME .. "global_variables.py"
     local file = io.open(path_file, "w")
-    local content = "WINDOW_WIDTH = " .. tostring(WINDOW_WIDTH) .. "\nWINDOW_HEIGHT = " .. tostring(WINDOW_HEIGHT) .. "\nVIRTUAL_WIDTH = " .. tostring(VIRTUAL_WIDTH) .. "\nVIRTUAL_HEIGHT = " .. tostring(VIRTUAL_HEIGHT) .. "\n"
+    local content = "WINDOW_WIDTH = " .. tostring(WINDOW_WIDTH) .. "\nWINDOW_HEIGHT = " .. tostring(WINDOW_HEIGHT) .. "\nVIRTUAL_WIDTH = " .. tostring(VIRTUAL_WIDTH) .. "\nVIRTUAL_HEIGHT = " .. tostring(VIRTUAL_HEIGHT) .. "\nSAMPLES_NUM = " .. tostring(numeroPrintsMaximo) .."\n"
     if file then
         file:write(content)
         file:close()
@@ -57,7 +64,7 @@ function Debug:write_global()
 end
 
 function Debug:write_fonts()
-    local path_file = FILE_NAME .. "/global_variables.py"
+    local path_file = FILE_NAME .. "global_variables.py"
     local fonts = "fonts = ["
     for i=1,table.getn(fonts_names) do
         fonts = fonts .. "\n\t{\n\t\t'name': '" .. fonts_names[i] .. "',\n\t\t"
@@ -79,13 +86,13 @@ end
 
 function Debug:write_background()
     if TAKING_SAMPLE then
-        local path_file = FILE_NAME .. "/images.py"
+        local path_file = FILE_NAME  .. tostring(numeroPrint) ..  "/images.py"
         local images = "background_images = ["
 
         for i=1,table.getn(background_paths) do
             images = images .. "\n\t{\n\t\t'path': '" .. background_paths[i] .. "',\n\t\t"
             images = images .. "'x': '" .. background_xs[i] .. "',\n\t\t"
-            images = images .. "'y': " .. background_ys[i] .. "\n\t},"
+            images = images .. "'y': '" .. background_ys[i] .. "'\n\t},"
         end
         images = images .. "\n]\n"
         
@@ -101,9 +108,39 @@ function Debug:write_background()
     end
 end
 
+function Debug:write_images()
+    if TAKING_SAMPLE then
+        local path_file = FILE_NAME  .. tostring(numeroPrint) ..  "/images.py"
+        local images = "images = ["
+
+        for i=1,table.getn(images_paths) do
+            images = images .. "\n\t{\n\t\t'path': '" .. images_paths[i] .. "',\n\t\t"
+            images = images .. "'x': '" .. images_xs[i] .. "',\n\t\t"
+            images = images .. "'y': '" .. images_ys[i] .. "',\n\t\t"
+            images = images .. "'rotation': '" .. images_rotations[i] .. "',\n\t\t"
+            images = images .. "'scale_x': '" .. images_scale_xs[i] .. "',\n\t\t"
+            images = images .. "'scale_y': '" .. images_scale_ys[i] .. "'\n\t},"
+        end
+        images = images .. "\n]\n"
+        
+        local file = io.open(path_file, "a")
+        if file then
+            file:write(images)
+            file:close()
+        end
+
+        images_paths = {}
+        images_xs = {}
+        images_ys = {}
+        images_rotations = {}
+        images_scale_xs = {}
+        images_scale_ys = {}
+    end
+end
+
 function Debug:write_prints()
     if TAKING_SAMPLE then
-        local path_file = FILE_NAME .. "/prints.py"
+        local path_file = FILE_NAME .. tostring(numeroPrint) .. "/prints.py"
         local prints = "prints = ["
         for i=1,table.getn(print_texts) do
             prints = prints .. "\n\t{\n\t\t'text': '" .. print_texts[i] .. "',\n\t\t"
@@ -130,11 +167,7 @@ end
 
 function Debug:take_screenshot()
     if TAKING_SAMPLE then
-        local filename = "imagem_original.png"
+        local filename = "imagem_original-" .. tostring(numeroPrint) .. ".png"
         love.graphics.captureScreenshot( filename )
-
-        local src_path = love.filesystem.getSaveDirectory() .. '/' .. filename
-        local dst_path = FILE_NAME .. '/' .. filename
-        os.rename(src_path, dst_path)
     end
 end

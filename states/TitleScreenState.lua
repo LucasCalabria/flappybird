@@ -19,6 +19,8 @@ function TitleScreenState:render()
 
 end
 
+--------------- Classes de debug ---------------
+
 function printf(text, font, x, y, limit, align)
     if TAKING_SAMPLE then
         table.insert(print_texts, text)

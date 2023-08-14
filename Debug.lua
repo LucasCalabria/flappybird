@@ -108,12 +108,9 @@ end
 
 function Debug:write_global()
     local path_file = FILE_NAME .. "global_variables.py"
-    local file = io.open(path_file, "w")
     local content = "WINDOW_WIDTH = " .. tostring(WINDOW_WIDTH) .. "\nWINDOW_HEIGHT = " .. tostring(WINDOW_HEIGHT) .. "\nVIRTUAL_WIDTH = " .. tostring(VIRTUAL_WIDTH) .. "\nVIRTUAL_HEIGHT = " .. tostring(VIRTUAL_HEIGHT) .. "\nSAMPLES_NUM = " .. tostring(numeroPrintsMaximo) .."\n"
-    if file then
-        file:write(content)
-        file:close()
-    end
+
+    Debug:write(path_file, "w", content)
 end
 
 function Debug:write_fonts()
@@ -126,11 +123,7 @@ function Debug:write_fonts()
     end
     fonts = fonts .. "\n]\n"
     
-    local file = io.open(path_file, "a")
-    if file then
-        file:write(fonts)
-        file:close()
-    end
+    Debug:write(path_file, "a", fonts)
 
     fonts_names = {}
     fonts_paths = {}
@@ -149,11 +142,7 @@ function Debug:write_background()
         end
         images = images .. "\n]\n"
         
-        local file = io.open(path_file, "w")
-        if file then
-            file:write(images)
-            file:close()
-        end
+        Debug:write(path_file, "w", images)
 
         background_paths = {}
         background_xs = {}
@@ -176,11 +165,7 @@ function Debug:write_images()
         end
         images = images .. "\n]\n"
         
-        local file = io.open(path_file, "a")
-        if file then
-            file:write(images)
-            file:close()
-        end
+        Debug:write(path_file, "a", images)
 
         images_paths = {}
         images_xs = {}
@@ -204,17 +189,21 @@ function Debug:write_prints()
         end
         prints = prints .. "\n]\n"
         
-        local file = io.open(path_file, "w")
-        if file then
-            file:write(prints)
-            file:close()
-        end
+        Debug:write(path_file, "w", prints)
 
         print_texts = {}
         print_fonts = {}
         print_xs = {}
         print_ys = {}
         print_aligns = {}
+    end
+end
+
+function Debug:write(path, mode, txt)
+    local file = io.open(path, mode)
+    if file then
+        file:write(txt)
+        file:close()
     end
 end
 

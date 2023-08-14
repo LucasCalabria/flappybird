@@ -2,44 +2,82 @@ Debug = {}
 
 local FILE_NAME = "C:/Users/lucas/PycharmProjects/tcc/data/"
 
-tempoEspera = 2 -- Tempo entre capturas Em segundos
-numeroPrintsMaximo = 10 -- Numero de capturas realizadas
+local tempoEspera = 2 -- Tempo entre capturas Em segundos
+local numeroPrintsMaximo = 10 -- Numero de capturas realizadas
 
-tempoAcumulado = 0
-numeroPrint = 0
+local tempoAcumulado = 0
+local numeroPrint = 0
 
-TAKING_SAMPLE = false
+local DEBUGGING = false
+local TAKING_SAMPLE = false
 
 --------------- Variaveis Para Armazenamento ---------------
 
 
-variablePaths = {}
-variableObject = {}
+local variablePaths = {}
+local variableObject = {}
 
 
 ------------------ Variaveis Para Escrita ------------------
 
 
-fonts_names = {}
-fonts_paths = {}
-fonts_sizes = {}
+local fonts_names = {}
+local fonts_paths = {}
+local fonts_sizes = {}
 
-background_paths = {}
-background_xs = {}
-background_ys = {}
+local background_paths = {}
+local background_xs = {}
+local background_ys = {}
 
-images_paths = {}
-images_xs = {}
-images_ys = {}
-images_rotations = {}
-images_scale_xs = {}
-images_scale_ys = {}
+local images_paths = {}
+local images_xs = {}
+local images_ys = {}
+local images_rotations = {}
+local images_scale_xs = {}
+local images_scale_ys = {}
 
-print_texts = {}
-print_fonts = {}
-print_xs = {}
-print_ys = {}
-print_aligns = {}
+local print_texts = {}
+local print_fonts = {}
+local print_xs = {}
+local print_ys = {}
+local print_aligns = {}
+
+
+---------------- Funcoes de Chamada e controle ---------------
+
+
+function Debug:setDebug(flag)
+    DEBUGGING = flag
+end
+
+function Debug:debugGlobal()
+    if DEBUGGING then
+        Debug:write_global()
+        Debug:write_fonts()
+    end
+end
+
+function Debug:writeVariables(timeElapsed)
+    if DEBUGGING then
+        tempoAcumulado = tempoAcumulado + timeElapsed
+
+        if TAKING_SAMPLE then
+            Debug:take_screenshot()
+            Debug:write_background()
+            Debug:write_images()
+            Debug:write_prints()
+
+            TAKING_SAMPLE = false
+        end
+
+        if (tempoAcumulado >= tempoEspera and numeroPrint < numeroPrintsMaximo) then
+            TAKING_SAMPLE = true
+            numeroPrint = numeroPrint + 1
+
+            tempoAcumulado = tempoAcumulado - tempoEspera
+        end
+    end
+end
 
 
 --------------- Funcoes Para Guardar Variaveis ---------------

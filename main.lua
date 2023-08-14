@@ -20,8 +20,6 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 512
 VIRTUAL_HEIGHT = 288
 
-DEBUGGING = true
-
 local backgroundScroll = 0
 local groundScroll = 0
 
@@ -37,6 +35,7 @@ local scrolling = true
 
 
 function love.load()
+    Debug:setDebug(true)
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
@@ -83,10 +82,7 @@ function love.load()
 
     love.keyboard.keysPressed = {} -- cria uma lista de input
 
-    if DEBUGGING then
-        Debug:write_global()
-        Debug:write_fonts()
-    end
+    Debug:debugGlobal()
 end
 
 function love.resize(w, h)
@@ -119,28 +115,7 @@ function love.update(dt)
     groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) -- a imagem do chão começa a se mover
         % GROUND_LOOPING_POINT -- recomeça a imagem depois de passar pelo looping point
 
-
-    if DEBUGGING then
-        tempoAcumulado = tempoAcumulado + dt
-
-        if TAKING_SAMPLE then
-            Debug:take_screenshot()
-            Debug:write_background()
-            Debug:write_images()
-            Debug:write_prints()
-
-            TAKING_SAMPLE = false
-        end
-
-        if (tempoAcumulado >= tempoEspera and numeroPrint < numeroPrintsMaximo) then
-            TAKING_SAMPLE = true
-            numeroPrint = numeroPrint + 1
-
-            --print_fonts = {'flappyFont', 'mediumFont'}
-
-            tempoAcumulado = tempoAcumulado - tempoEspera
-        end
-    end
+    Debug:writeVariables(dt)
 
     gStateMachine:update(dt)
 

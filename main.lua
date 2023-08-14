@@ -42,8 +42,8 @@ function love.load()
 
     love.window.setTitle('Flappy Bird')
 
-    newImage(background,'background','imagens/background.png')
-    newImage(ground, 'ground', 'imagens/ground.png')
+    background = newImage('background','imagens/background.png')
+    ground = newImage('ground', 'imagens/ground.png')
 
     smallFont = newFont('smallFont','fontes/font.ttf', 8)
     mediumFont = newFont('mediumFont','fontes/flappy.ttf', 14)
@@ -159,29 +159,3 @@ function love.draw()
     push:finish()
 end
 
-function newFont(name, path, size)
-    if DEBUGGING then
-        table.insert(fonts_names, name)
-        table.insert(fonts_paths, path)
-        table.insert(fonts_sizes, size)
-    end
-
-    return love.graphics.newFont(path, size)
-end
-
-function newImage(variable, name, path)
-    variable = love.graphics.newImage(path)
-
-    Debug:setVariablePaths(name, path)
-    Debug:setVariableObj(name, variable)
-end
-
-function draw_background(image, x, y)
-    if TAKING_SAMPLE then
-        table.insert(background_paths, Debug:getVariablePaths(image))
-        table.insert(background_xs, x)
-        table.insert(background_ys, y)
-    end
-
-    return love.graphics.draw(Debug:getVariableObj(image), x, y)
-end

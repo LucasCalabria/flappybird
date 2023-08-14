@@ -91,26 +91,3 @@ function PlayState:render()
     print('Score: ' .. tostring(self.score), 'flappyFont', 8, 8)
     self.bird:render()
 end
-
---------------- Classes de debug ---------------
-
-function printf(text, font, x, y)
-    local align = 'none'
-    if TAKING_SAMPLE then
-        table.insert(print_texts, text)
-        table.insert(print_fonts, font)
-        table.insert(print_xs, x)
-        table.insert(print_ys, y)
-        table.insert(print_aligns, align)
-    end
-
-    love.graphics.setFont(Debug:getVariableObj(font))
-
-    return love.graphics.printf(text, x, y, limit, align)
-end
-
-function setFont(variable, name)
-    love.graphics.setFont(variable)
-
-    Debug:setVariableObj(name, variable)
-end

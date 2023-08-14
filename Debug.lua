@@ -2,16 +2,23 @@ Debug = {}
 
 local FILE_NAME = "C:/Users/lucas/PycharmProjects/tcc/data/"
 
+tempoEspera = 2 -- Tempo entre capturas Em segundos
+numeroPrintsMaximo = 10 -- Numero de capturas realizadas
+
+tempoAcumulado = 0
+numeroPrint = 0
+
 TAKING_SAMPLE = false
 
-tempoEspera = 2 -- Em segundos
-tempoAcumulado = 0
+--------------- Variaveis Para Armazenamento ---------------
 
-numeroPrint = 0
-numeroPrintsMaximo = 5
 
-variablePaths = {} -- Tabela para armazenar variáveis
+variablePaths = {}
 variableObject = {}
+
+
+------------------ Variaveis Para Escrita ------------------
+
 
 fonts_names = {}
 fonts_paths = {}
@@ -34,6 +41,10 @@ print_xs = {}
 print_ys = {}
 print_aligns = {}
 
+
+--------------- Funcoes Para Guardar Variaveis ---------------
+
+
 -- Função para atribuir um valor a uma variável e armazená-la na tabela
 function Debug:setVariablePaths(name, value)
     variablePaths[name] = value
@@ -52,6 +63,10 @@ end
 function Debug:getVariableObj(name)
     return variableObject[name]
 end
+
+
+--------------- Funcoes Para Escrever Variaveis ---------------
+
 
 function Debug:write_global()
     local path_file = FILE_NAME .. "global_variables.py"
@@ -170,4 +185,81 @@ function Debug:take_screenshot()
         local filename = "imagem_original-" .. tostring(numeroPrint) .. ".png"
         love.graphics.captureScreenshot( filename )
     end
+end
+
+
+--------------- Funcoes Substituindo Love2D ---------------
+
+
+----- Funcoes de Texto -----
+
+function newFont(name, path, size)
+    if DEBUGGING then
+        table.insert(fonts_names, name)
+        table.insert(fonts_paths, path)
+        table.insert(fonts_sizes, size)
+    end
+
+    return love.graphics.newFont(path, size)
+end
+
+function setFont(variable, name)
+    love.graphics.setFont(variable)
+
+    Debug:setVariableObj(name, variable)
+end
+
+function printf(text, font, x, y, limit, align)
+    limit = limit or 'none'
+    align = align or 'none'
+
+    if TAKING_SAMPLE then
+        table.insert(print_texts, text)
+        table.insert(print_fonts, font)
+        table.insert(print_xs, x)
+        table.insert(print_ys, y)
+        table.insert(print_aligns, align)
+    end
+
+    love.graphics.setFont(Debug:getVariableObj(font))
+
+    return love.graphics.printf(text, x, y, limit, align)
+end
+ 
+----- Funcoes de imagens -----
+
+function newImage(name, path)
+    local variable = love.graphics.newImage(path)
+
+    Debug:setVariablePaths(name, path)
+    Debug:setVariableObj(name, variable)
+    
+    return variable
+end
+
+function draw(image, x, y, rotation, scale_x, scale_y)
+    rotation = rotation or 0
+    scale_x = scale_x or 1
+    scale_y = scale_y or 1
+
+    if TAKING_SAMPLE then
+        table.insert(images_paths, Debug:getVariablePaths(image))
+        table.insert(images_xs, x)
+        table.insert(images_ys, y)
+        table.insert(images_rotations, rotation)
+        table.insert(images_scale_xs, scale_x)
+        table.insert(images_scale_ys, scale_y)
+    end
+
+    return love.graphics.draw(Debug:getVariableObj(image), x, y, rotation, scale_x, scale_y)
+end
+
+function draw_background(image, x, y)
+    if TAKING_SAMPLE then
+        table.insert(background_paths, Debug:getVariablePaths(image))
+        table.insert(background_xs, x)
+        table.insert(background_ys, y)
+    end
+
+    return love.graphics.draw(Debug:getVariableObj(image), x, y)
 end

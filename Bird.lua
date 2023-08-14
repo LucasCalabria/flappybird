@@ -3,7 +3,7 @@ Bird = Class{}
 local GRAVITY = 20 -- numero aleatorio ,,(se fosse negativa ele ia pra cima) (positivo desce)
 
 function Bird:init()
-    self.image = Bird:newImage('self.image', 'imagens/bird.png')
+    self.image = newImage('self.image', 'imagens/bird.png')
     self.width = self.image:getWidth()  -- mostra a largura da imagem do passaro
     self.height = self.image:getHeight()-- mostra a altura da imagem do passaro
 
@@ -41,29 +41,5 @@ function Bird:update(dt)
 end
 
 function Bird:render()
-    Bird:draw('self.image', self.x, self.y) 
-end
-
---------------- Classes de debug ---------------
-
-function Bird:newImage(name, path)
-    local variable = love.graphics.newImage(path)
-
-    Debug:setVariablePaths(name, path)
-    Debug:setVariableObj(name, variable)
-    
-    return variable
-end
-
-function Bird:draw(image, x, y)
-    if TAKING_SAMPLE then
-        table.insert(images_paths, Debug:getVariablePaths(image))
-        table.insert(images_xs, x)
-        table.insert(images_ys, y)
-        table.insert(images_rotations, 0)
-        table.insert(images_scale_xs, 1)
-        table.insert(images_scale_ys, 1)
-    end
-
-    return love.graphics.draw(Debug:getVariableObj(image), x, y, rotation, scale_x, scale_y)
+    draw('self.image', self.x, self.y) 
 end

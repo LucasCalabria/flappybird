@@ -50,6 +50,14 @@ function Debug:setDebug(flag)
     DEBUGGING = flag
 end
 
+function Debug:setNumSamples(num)
+    numeroPrintsMaximo = num
+end
+
+function Debug:setTimeBetweenSamples(time)
+    tempoEspera = time
+end
+
 function Debug:debugGlobal()
     if DEBUGGING then
         Debug:write_global()

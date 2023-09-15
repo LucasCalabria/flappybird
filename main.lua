@@ -36,6 +36,8 @@ local scrolling = true
 
 function love.load()
     Debug:setDebug(true)
+    Debug:setNumSamples(30)
+    Debug:setTimeBetweenSamples(1)
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
